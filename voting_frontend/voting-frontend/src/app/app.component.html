@@ -1,0 +1,181 @@
+<div class="app-root">
+  <header class="top-bar">
+    <div class="top-bar-left">
+      <span class="logo-dot"></span>
+      <span class="app-title">STM32 Voting Demo</span>
+
+      <span class="session-label" *ngIf="session; else noSession">
+        Sesiune: {{ session.name }} ({{ session.started_at | date:'short' }})
+        • Rulare: {{ sessionUptimeLabel }}
+        <span class="session-state" [ngClass]="{ stopped: !session.active }">
+          {{ session.active ? 'ACTIVĂ' : 'OPRITĂ' }}
+        </span>
+      </span>
+
+      <ng-template #noSession>
+        <span class="session-label warning">
+          Nicio sesiune activă – apasă ▶ pentru a începe și a introduce numele sesiunii
+        </span>
+      </ng-template>
+    </div>
+
+    <div class="top-bar-right">
+      <!-- Start sesiune nouă -->
+      <button class="icon-btn" (click)="startSession()" title="Pornește sesiune nouă">
+        <span class="icon-play"></span>
+      </button>
+
+      <!-- Resume sesiune oprită -->
+      <button class="icon-btn" (click)="resumeSessionClient()" title="Reia ultima sesiune oprită">
+        <span class="icon-play small"></span>
+      </button>
+
+      <!-- Stop sesiune curentă -->
+      <button class="icon-btn" (click)="stopSession()" title="Oprește sesiunea curentă">
+        <span class="icon-stop"></span>
+      </button>
+
+      <!-- Restart sesiune (șterge datele) -->
+      <button class="icon-btn danger" (click)="restartSession()" title="Restart sesiune (șterge voturile)">
+        <span class="icon-restart"></span>
+      </button>
+
+      <span class="badge badge-live">LIVE</span>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="left-panel">
+      <div class="panel-group">
+        <div class="user-block">
+          <label for="userId">ID utilizator</label>
+          <input
+            id="userId"
+            [(ngModel)]="userId"
+            placeholder="ex. student123"
+          />
+        </div>
+
+        <button class="nav-btn primary">Generare token</button>
+        <button class="nav-btn">Votare</button>
+        <button class="nav-btn">Rezultate</button>
+      </div>
+
+      <div class="panel-info">
+        <p class="panel-label">Token curent</p>
+        <p class="panel-token" *ngIf="currentToken; else noToken">
+          {{ currentToken }}
+        </p>
+        <ng-template #noToken>
+          <p class="panel-token empty">Niciun token generat</p>
+        </ng-template>
+        <button class="btn btn-accent" (click)="generateToken()">
+          Generează token
+        </button>
+      </div>
+
+      <div class="panel-info">
+        <p class="panel-label">Status sistem</p>
+        <p
+          class="panel-status"
+          [ngClass]="{ error: statusMessage.includes('Eroare') }"
+        >
+          {{ statusMessage || 'În așteptare acțiune utilizator...' }}
+        </p>
+      </div>
+    </section>
+
+    <section class="right-panel">
+      <div class="cards-row">
+        <div class="stat-card">
+          <p class="stat-label">Total voturi</p>
+          <p class="stat-value">
+            {{ results.A + results.B + results.C }}
+          </p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-label">Voturi A</p>
+          <p class="stat-value accent">{{ results.A }}</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-label">Voturi B</p>
+          <p class="stat-value accent">{{ results.B }}</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-label">Voturi C</p>
+          <p class="stat-value accent">{{ results.C }}</p>
+        </div>
+      </div>
+
+      <div class="content-grid">
+        <div class="card">
+          <h2>Alege opțiunea</h2>
+          <div class="options">
+            <label class="radio-option">
+              <input
+                type="radio"
+                name="option"
+                value="A"
+                [(ngModel)]="selectedOption"
+              />
+              <span>A</span>
+            </label>
+            <label class="radio-option">
+              <input
+                type="radio"
+                name="option"
+                value="B"
+                [(ngModel)]="selectedOption"
+              />
+              <span>B</span>
+            </label>
+            <label class="radio-option">
+              <input
+                type="radio"
+                name="option"
+                value="C"
+                [(ngModel)]="selectedOption"
+              />
+              <span>C</span>
+            </label>
+          </div>
+          <button class="btn btn-primary" (click)="castVote()">
+            Trimite vot
+          </button>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>Rezultate</h2>
+            <button class="btn btn-outline" (click)="loadResults()">
+              Refresh rezultate
+            </button>
+          </div>
+
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th>Opțiune</th>
+                <th>Voturi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>A</td>
+                <td>{{ results.A }}</td>
+              </tr>
+              <tr>
+                <td>B</td>
+                <td>{{ results.B }}</td>
+              </tr>
+              <tr>
+                <td>C</td>
+                <td>{{ results.C }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
