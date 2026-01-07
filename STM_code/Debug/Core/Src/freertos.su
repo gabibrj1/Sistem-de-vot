@@ -1,0 +1,4 @@
+../Core/Src/freertos.c:98:6:MX_FREERTOS_Init	8	static
+../Core/Src/freertos.c:154:6:StartDefaultTask	16	static
+../Core/Src/freertos.c:176:6:StartVoteTask	16	static
+../Core/Src/freertos.c:195:6:StartCommTask	16	static
